@@ -1,3 +1,32 @@
+name: Debug OIDC
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get OIDC token
+        id: oidc
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const token = await core.getIDToken();
+            core.setOutput('token', token);
+      - name: Decode token and show sub claim
+        run: |
+          TOKEN="${{ steps.oidc.outputs.token }}"
+          echo "Token: $TOKEN"
+          # Decodifica la parte del payload (segundo segmento)
+          PAYLOAD=$(echo "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null || echo "$TOKEN" | cut -d. -f2 | base64 --decode)
+          echo "Payload: $PAYLOAD"
+          echo "$PAYLOAD" | grep -o '"sub":"[^"]*"' || echo "sub no encontrado"
+
 name: S3 sync action
 
 on:
