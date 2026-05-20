@@ -22,8 +22,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4 # Actualizado a v4
         with:
           role-session-name: awssyncsession
-          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::130063747200:role/github-trust-role
+          aws-region: us-east-1
 
       - name: Sync bucket
-        run: aws s3 sync ./files/ s3://${{ secrets.AWS_BUCKET_NAME }} --delete
+        run: aws s3 sync ./files/ s3://github-trust-coronel  --delete
